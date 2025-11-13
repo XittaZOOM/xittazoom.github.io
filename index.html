@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nunes Hub Dashboard</title>
+<style>
+  * {margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;}
+  body {background:#0b0b0b;color:#fff;user-select:none;-webkit-user-drag:none;-webkit-touch-callout:none;overflow-x:hidden;transition:background .5s,color .5s;}
+  body.light {background:#f2f2f2;color:#000;}
+  header {display:flex;align-items:center;justify-content:space-between;padding:15px 25px;}
+  .menu-btn {width:30px;height:22px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;}
+  .menu-btn div {height:4px;background:white;border-radius:2px;transition:.3s;}
+  body.light .menu-btn div {background:black;}
+  .theme-toggle {background:none;border:1px solid #444;color:white;padding:5px 10px;border-radius:8px;cursor:pointer;transition:.3s;}
+  body.light .theme-toggle {color:black;border-color:#ccc;}
+  .side-menu {position:fixed;top:0;left:-260px;width:260px;height:100%;background:#111;padding:20px;transition:.4s ease;z-index:1000;display:flex;flex-direction:column;justify-content:space-between;}
+  body.light .side-menu {background:#ddd;}
+  .side-menu.active {left:0;}
+  .menu-links {display:flex;flex-direction:column;gap:18px;margin-top:60px;}
+  .menu-links a {color:white;text-decoration:none;font-size:1.1rem;transition:.3s;}
+  body.light .menu-links a {color:black;}
+  .menu-links a:hover {opacity:.7;}
+  .menu-description {color:#888;font-size:.9rem;margin-top:40px;border-top:1px solid #222;padding-top:20px;}
+  .blur-overlay {position:fixed;top:0;left:0;width:100%;height:100%;backdrop-filter:blur(6px);background:rgba(0,0,0,.3);z-index:900;opacity:0;visibility:hidden;transition:.3s;}
+  .blur-overlay.active {opacity:1;visibility:visible;}
+  .content {text-align:center;padding:40px 20px;animation:fadeIn 1s ease;}
+  @keyframes fadeIn {from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
+  .search-bar {margin:10px auto 25px;width:90%;max-width:500px;background:#121212;padding:10px 15px;border-radius:10px;border:1px solid #333;display:flex;flex-direction:column;align-items:center;gap:6px;animation:fadeIn 1.2s ease;}
+  body.light .search-bar {background:#e6e6e6;border-color:#ccc;}
+  .search-bar p {color:#888;font-size:.9rem;}
+  .search-bar input {width:100%;background:#0b0b0b;color:white;border:1px solid #333;border-radius:8px;padding:8px 10px;outline:none;text-align:center;transition:.3s;}
+  body.light .search-bar input {background:white;color:black;border-color:#ccc;}
+  h1 {font-size:2.2rem;margin-bottom:30px;}
+  .cards {display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;padding:20px;}
+  .card {background:#141414;border-radius:15px;padding:20px;transition:.3s;position:relative;border:.5px solid rgba(255,255,255,.3);}
+  body.light .card {background:#fff;border:.5px solid rgba(0,0,0,.3);}
+  .card:hover {transform:translateY(-5px);box-shadow:0 0 15px rgba(255,255,255,.08);border:.5px solid rgba(255,255,255,.6);}
+  .card h2 {color:inherit;font-size:1.3rem;margin-bottom:8px;}
+  .card p {color:#aaa;font-size:.9rem;line-height:1.4;overflow:hidden;transition:max-height .3s ease;}
+  body.light .card p {color:#444;}
+  .read-more {display:inline-block;color:#bbb;font-size:.9rem;cursor:pointer;margin-top:5px;}
+  .btn-ir {position:absolute;bottom:15px;right:20px;background:white;color:black;border:none;border-radius:6px;padding:6px 12px;font-weight:bold;cursor:pointer;transition:.3s;}
+  .btn-ir:hover {transform:scale(1.05);}
+  .no-results {color:#888;text-align:center;margin-top:30px;display:none;}
+  #about-section {padding:60px 20px;text-align:center;border-top:1px solid #222;animation:fadeIn 1.5s ease;}
+  #about-section h2 {color:white;}
+  #about-section p {color:#888;max-width:600px;margin:10px auto;}
+  /* Pop-up */
+  #popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #141414;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    display: none;
+    z-index: 2000;
+    width: 280px;
+  }
+  #popup p {
+    font-size: 1rem;
+    margin-bottom: 15px;
+  }
+  #popup button {
+    background: transparent;
+    color: white;
+    border: 1px solid white;
+    border-radius: 8px;
+    padding: 5px 20px;
+    cursor: pointer;
+  }
+  #popup button:hover {
+    background: white;
+    color: black;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="menu-btn" id="menu-btn"><div></div><div></div><div></div></div>
+    <button class="theme-toggle" id="theme-toggle">🌙</button>
+  </header>
+
+  <aside class="side-menu" id="side-menu">
+    <div>
+      <div class="menu-links">
+        <a href="#" id="home-link">Página Inicial</a>
+        <a href="#" id="search-link">Pesquisar</a>
+        <a href="#about-section" id="about-link">Sobre Nós</a>
+      </div>
+      <div class="menu-description">Oi, eu sou Nunes, programador frontend, e este é meu projeto de Dashboard. Espero que goste!</div>
+    </div>
+  </aside>
+
+  <div class="blur-overlay" id="overlay"></div>
+
+  <div class="content">
+    <div class="search-bar">
+      <p>Pense em algo que você precisa...</p>
+      <input type="text" id="searchInput" placeholder="Buscar ferramentas...">
+    </div>
+
+    <h1>---Nunes Dashboard---</h1>
+    <div class="cards" id="cards"></div>
+    <p class="no-results" id="noResults">Nenhum resultado encontrado..</p>
+  </div>
+
+  <section id="about-section">
+    <h2>Sobre Mim</h2>
+    <p>Ôpa, eu sou o Nunes sou um garoto que sonha em se tornar um grande Dev, este e meu Dashboard para facilitar minha rotina escolar, Aproveite.</p>
+  </section>
+
+  <div id="popup">
+    <p>Script Copiado para sua área de Transferência ✅</p>
+    <button id="okBtn">ok</button>
+  </div>
+
+  <script>
+    const scriptToCopy = `javascript:(function()%7Bjavascript%3A(function()%20%7B%0A%20%20%20%20...%7D)()%3B%7D)()%3B`;
+
+    const tools = [
+      {title: "Professor Tutor SP📖", desc: "Analisa páginas web e fornece respostas precisas usando IA.", url: "#copyScript"},
+      {title: "Conversor de Moedas", desc: "Converta valores em tempo real entre moedas internacionais.", url: "https://exemplo2.com"},
+      {title: "Calculadora Avançada", desc: "Realize cálculos simples ou complexos de forma moderna.", url: "https://exemplo3.com"},
+      {title: "Otimizador de Imagens", desc: "Reduza o tamanho de imagens mantendo a qualidade.", url: "https://exemplo4.com"},
+    ];
+
+    const cardsContainer = document.getElementById("cards");
+    tools.forEach((tool, i) => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <h2>${tool.title}</h2>
+        <p>${tool.desc}</p>
+        <button class="btn-ir" onclick="handleButtonClick(${i})">Ir</button>
+      `;
+      cardsContainer.appendChild(card);
+    });
+
+    function handleButtonClick(i) {
+      if (i === 0) {
+        navigator.clipboard.writeText(scriptToCopy).then(() => {
+          showPopup();
+        });
+      } else {
+        window.location.href = tools[i].url;
+      }
+    }
+
+    function showPopup() {
+      const popup = document.getElementById("popup");
+      popup.style.display = "block";
+      document.getElementById("okBtn").onclick = () => popup.style.display = "none";
+    }
+
+    // menu e tema
+    const menuBtn = document.getElementById("menu-btn");
+    const sideMenu = document.getElementById("side-menu");
+    const overlay = document.getElementById("overlay");
+    menuBtn.addEventListener("click", () => {
+      sideMenu.classList.toggle("active");
+      overlay.classList.toggle("active");
+    });
+    overlay.addEventListener("click", () => {
+      sideMenu.classList.remove("active");
+      overlay.classList.remove("active");
+    });
+    const themeToggle = document.getElementById("theme-toggle");
+    themeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("light");
+      themeToggle.textContent = document.body.classList.contains("light") ? "☀️" : "🌙";
+    });
+  </script>
+</body>
+  </html>
